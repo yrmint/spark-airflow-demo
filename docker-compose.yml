@@ -8,51 +8,72 @@ services:
     volumes:
       - ch_data:/var/lib/clickhouse
       - ./init_clickhouse:/docker-entrypoint-initdb.d
+    networks:
+      - backend
 
   spark-master:
-    image: apache/spark:3.5.1
+    image: apache/spark:4.1.1-python3
     container_name: spark-master
     environment:
-      - SPARK_MODE=master
       - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_NO_DAEMONIZE=true
     ports:
       - "8082:8080"
       - "7077:7077"
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     volumes:
       - spark-data:/opt/spark/work-dir
+    networks:
+      - backend
 
   spark-worker-1:
-    image: apache/spark:3.5.1
+    image: apache/spark:4.1.1-python3
     container_name: spark-worker-1
     environment:
-      - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_NO_DAEMONIZE=true
     depends_on:
       - spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
     volumes:
       - spark-data:/opt/spark/work-dir
+    networks:
+      - backend
 
   spark-worker-2:
-    image: apache/spark:3.5.1
+    image: apache/spark:4.1.1-python3
     container_name: spark-worker-2
     environment:
-      - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_NO_DAEMONIZE=true
     depends_on:
       - spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
     volumes:
       - spark-data:/opt/spark/work-dir
+    networks:
+      - backend
 
   spark-worker-3:
-    image: apache/spark:3.5.1
+    image: apache/spark:4.1.1-python3
     container_name: spark-worker-3
     environment:
-      - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_NO_DAEMONIZE=true
     depends_on:
       - spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
     volumes:
       - spark-data:/opt/spark/work-dir
+    networks:
+      - backend
 
   airflow:
     build: .
@@ -69,7 +90,17 @@ services:
       - ./dags:/opt/airflow/dags
       - ./spark_jobs:/opt/spark_jobs
       - ./logs:/opt/airflow/logs
+      - airflow_db:/opt/airflow
+      - ./airflow_init:/opt/airflow/init
+    command: bash /opt/airflow/init/init.sh
+    networks:
+      - backend
 
 volumes:
   ch_data:
   spark-data:
+  airflow_db:
+
+networks:
+  backend:
+    driver: "bridge"

@@ -1,5 +1,3 @@
 apache-airflow-providers-apache-spark
 apache-airflow-providers-jdbc
-pyspark
-clickhouse-connect
-pandas
+pyspark==3.5.1

@@ -1,3 +1,8 @@
+--create user
+CREATE USER IF NOT EXISTS user IDENTIFIED BY 'password';
+
+GRANT ALL ON default.* TO user;
+
 -- create demo tables
 
 CREATE DATABASE IF NOT EXISTS default;
