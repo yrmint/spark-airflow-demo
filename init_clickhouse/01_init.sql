@@ -9,11 +9,12 @@ CREATE DATABASE IF NOT EXISTS default;
 
 -- source data
 CREATE TABLE IF NOT EXISTS demo_data (
+    id UInt64,
     x1 Float64,
     x2 Float64,
     y  Float64
 ) ENGINE = MergeTree()
-ORDER BY tuple()
+ORDER BY id
 SETTINGS index_granularity = 8192;
 
 -- model coefficients
@@ -26,10 +27,11 @@ CREATE TABLE IF NOT EXISTS model_coefficients (
 ) ENGINE = MergeTree()
 ORDER BY created_at;
 
--- test data (1000 lines)
-INSERT INTO demo_data (x1, x2, y)
+-- test data
+INSERT INTO demo_data
 SELECT
+    number + 1 AS id,
     randNormal(10, 3) AS x1,
     randNormal(5, 2)  AS x2,
     x1 * 2.5 + x2 * 1.7 + randNormal(0, 5) AS y
-FROM numbers(1000);
+FROM numbers(10000000);

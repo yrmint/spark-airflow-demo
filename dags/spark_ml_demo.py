@@ -33,7 +33,7 @@ with DAG(
         application="/opt/spark_jobs/linear_regression.py",
         conn_id="spark_default",
         conf={
-            "spark.executor.instances": "2",
+            "spark.executor.instances": "3",
             "spark.executor.cores": "1",
             "spark.executor.memory": "1g",
         },
