@@ -51,22 +51,11 @@ You should see 6 containers:
 - spark-worker-2
 - spark-worker-3
 
-### 4. Setup Airflow connection
-
-1. Access Airflow UI at http://localhost:8081
-    - username: `admin`
-    - password: `admin`
-2. Go to Admin - Connections
-3. Edit spark_default record:
-    - `Connection Id`: `spark_default`
-    - `Connection Type`: `Spark`
-    - `Host`: `spark-master`
-    - `Port`: `7077`
-    - `Deploy mode`: `client`
-
 
 ## How to run
 1. Open Airflow UI at http://localhost:8081
+   - username: `admin`
+   - password: `admin`
 2. Find DAG spark_ml_clickhouse_demo
 3. Enable the DAG (toggle on)
 4. Click Trigger DAG
